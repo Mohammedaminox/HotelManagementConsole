@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.time.format.DateTimeFormatter;
 
 public class Hotel {
 
@@ -14,27 +15,18 @@ public class Hotel {
     public Hotel(int nombreDeChambre){
         chambres = new ArrayList<>();
         reservations = new ArrayList<>();
-        for (int i = 0; i <= nombreDeChambre; i++){
+        for (int i = 1; i <= nombreDeChambre; i++){
             chambres.add(new Chambre(i));
         }
     }
 
-    //Afficher les chambres disponibles
-    public List<Chambre> getChambresDisponibles(){
-        List<Chambre> disponibles = new ArrayList<>();
-        for (Chambre chambre : chambres){
-            if (chambre.isDisponible()){
-                disponibles.add(chambre);
-            }
-        }
-        return disponibles;
-    }
+
 
     //Afficher les reservations
-    public void getReservations() {
+    public void afficherReservations() {
         if (reservations.size() > 0) {
             for (int i = 0; i < reservations.size(); i++) {
-                System.out.println("ID: " + (i + 1) + " - " + reservations.get(i));
+                System.out.println("N°: " + (i + 1) + " - " + reservations.get(i));
             }
         } else {
             System.out.println("Aucune réservation trouvée");
@@ -43,17 +35,55 @@ public class Hotel {
 
 
     //Ajouter les reservations
-    public void ajoutReservation(String client, Chambre chambre, LocalDate checkIn, LocalDate checkOut){
-            if(chambre.isDisponible()){
+    public void ajoutReservation() {
+        Scanner scanner = new Scanner(System.in);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        System.out.print("Entrez le nom du client : ");
+        String client = scanner.nextLine();
+
+        System.out.println("Voici toutes les chambres : ");
+        for (Chambre chambre : chambres) {
+            System.out.println("Chambre Numero : " + chambre.getChambreID());
+        }
+        System.out.print("Entrez le numéro de la chambre que vous voulez reserver : ");
+        int chambreID = scanner.nextInt();
+        scanner.nextLine(); // Consommer la nouvelle ligne
+
+        System.out.print("Entrez la date de check-in (yyyy-MM-dd) : ");
+        String checkInStr = scanner.nextLine();
+        LocalDate checkIn = LocalDate.parse(checkInStr, formatter);
+
+        System.out.print("Entrez la date de check-out (yyyy-MM-dd) : ");
+        String checkOutStr = scanner.nextLine();
+        LocalDate checkOut = LocalDate.parse(checkOutStr, formatter);
+
+        Chambre chambre = getChambreById(chambreID);
+
+        if (chambre != null) {
+            boolean isAvailable = true;
+            for (Reservation reservation : reservations) {
+                if (reservation.getChambre().getChambreID() == chambreID && reservation.overlaps(checkIn, checkOut)) {
+                    isAvailable = false;
+                    break;
+                }
+            }
+
+            if (isAvailable) {
                 Reservation newReservation = new Reservation(client, chambre, checkIn, checkOut);
                 reservations.add(newReservation);
-                chambre.setDisponible(false);
                 System.out.println("Réservation effectuée avec succès pour le client " + client);
             } else {
-                System.out.println("La chambre " + chambre.getChambreID() + " n'est pas disponible.");
+                System.out.println("La chambre " + chambre.getChambreID() + " est déjà réservée pour ces dates.");
             }
+        } else {
+            System.out.println("La chambre avec l'ID " + chambreID + " n'existe pas.");
+        }
     }
 
+
+
+    //remener chamberes par id
     public Chambre getChambreById(int id) {
         for (Chambre chambre : chambres) {
             if (chambre.getChambreID() == id) {
@@ -63,14 +93,16 @@ public class Hotel {
         return null;
     }
 
+
     //Annuler les réservations
-    public void annulerReservation(Scanner scanner) {
-        getReservations();
+    public void annulerReservation() {
+        Scanner scanner = new Scanner(System.in);
+        afficherReservations();
         if(reservations.isEmpty()){
             System.out.println("il ya aucune resevation");
             return;
         }
-        System.out.println("Enter id de reservation que vous voulez modifier: ");
+        System.out.println("Enter le numero de reservation que vous voulez annuler : ");
         int annuleResvationId = scanner.nextInt();
         scanner.nextLine();
             if (annuleResvationId <= 0 || annuleResvationId > reservations.size()){
@@ -81,59 +113,65 @@ public class Hotel {
 
             reservationAnnuler.annuler();
             reservations.remove(annuleResvationId - 1);
-        System.out.println("Reservation Modifier successfully");
-
-//            if (reservation.getClient().equals(client)) {
-//                reservation.annuler();
-//                reservations.remove(reservation);
-//                System.out.println("Réservation annulée avec succès pour le client " + client);
-//                break;
-//            }
-
+        System.out.println("Reservation annuler successfully");
 
     }
+
 
     //Modifier les reservation
-    public void modifierReservation(Scanner scanner){
-        getReservations();
-        if(reservations.isEmpty()){
-            System.out.println("il ya aucune resevation");
-            return;
-        }
-        System.out.println("Enter id de reservation que vous voulez modifier: ");
-        int editResvationId = scanner.nextInt();
-        scanner.nextLine();
+    public void modifierReservation() {
+        Scanner scanner = new Scanner(System.in);
+        afficherReservations();
 
-        if (editResvationId <= 0 || editResvationId > reservations.size()){
-            System.out.println("reservation introuvable");
+        if (reservations.isEmpty()) {
+            System.out.println("Il n'y a aucune réservation.");
             return;
         }
 
-        Reservation reservation = reservations.get(editResvationId - 1);
-        System.out.println("Reservation a modifier : " + reservation);
+        System.out.print("Entrez l'ID de la réservation que vous voulez modifier : ");
+        int editReservationId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
 
-        System.out.println("Enter le nouveau clientName  (press Enter to skip)" + reservation.getClient());
+        if (editReservationId <= 0 || editReservationId > reservations.size()) {
+            System.out.println("Réservation introuvable.");
+            return;
+        }
+
+        Reservation reservation = reservations.get(editReservationId - 1);
+        System.out.println("Réservation à modifier : " + reservation);
+
+        System.out.println("Entrez le nouveau nom du client (Appuyez sur Entrée pour skiper) : " + reservation.getClient());
         String newClient = scanner.nextLine();
 
+        System.out.println("Entrez la nouvelle date de check-in (yyyy-MM-dd) (Appuyez sur Entrée pour skiper) : " + reservation.getCheckIn());
+        String newCheckInStr = scanner.nextLine();
 
-        if (!newClient.isEmpty()){
-            reservation.setClient(newClient);
+        System.out.println("Entrez la nouvelle date de check-out (yyyy-MM-dd) (Appuyez sur Entrée pour skiper) : " + reservation.getCheckOut());
+        String newCheckOutStr = scanner.nextLine();
+
+        LocalDate newCheckIn = newCheckInStr.isEmpty() ? reservation.getCheckIn() : LocalDate.parse(newCheckInStr);
+        LocalDate newCheckOut = newCheckOutStr.isEmpty() ? reservation.getCheckOut() : LocalDate.parse(newCheckOutStr);
+
+        // Check for overlapping reservations
+        boolean isAvailable = true;
+        for (Reservation res : reservations) {
+            if (res != reservation && res.getChambre().getChambreID() == reservation.getChambre().getChambreID() && res.overlaps(newCheckIn, newCheckOut)) {
+                isAvailable = false;
+                break;
+            }
         }
 
-        System.out.println("Enter le nouveau checkin date  (press Enter to skip) " + reservation.getCheckIn());
-        String newCheckIn = scanner.nextLine();
+        if (isAvailable) {
+            if (!newClient.isEmpty()) {
+                reservation.setClient(newClient);
+            }
+            reservation.setCheckIn(newCheckIn);
+            reservation.setCheckOut(newCheckOut);
 
-        if (!newCheckIn.isEmpty()){
-            reservation.setCheckIn(LocalDate.parse(newCheckIn));
+            System.out.println("Réservation modifiée avec succès.");
+        } else {
+            System.out.println("Les nouvelles dates se chevauchent avec une réservation existante pour cette chambre.");
         }
-
-        System.out.println("Enter le nouveau checkout date  (press Enter to skip) " + reservation.getCheckOut());
-        String newCheckOut = scanner.nextLine();
-
-        if (!newCheckOut.isEmpty()){
-            reservation.setCheckOut(LocalDate.parse(newCheckOut));
-        }
-
-        System.out.println("Reservation Modifier successfully");
     }
+
 }

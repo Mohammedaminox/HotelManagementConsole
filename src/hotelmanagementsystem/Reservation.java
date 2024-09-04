@@ -63,7 +63,6 @@ public class Reservation {
     public void annuler(){
         this.chambre.setDisponible(true);
     }
-
     // Override the toString() method
     @Override
     public String toString() {
@@ -74,4 +73,9 @@ public class Reservation {
                 ", checkOut=" + checkOut +
                 '.';
     }
+
+        public boolean overlaps(LocalDate newCheckIn, LocalDate newCheckOut) {
+            return !(newCheckOut.isBefore(this.checkIn) || newCheckIn.isAfter(this.checkOut));
+        }
+
 }
