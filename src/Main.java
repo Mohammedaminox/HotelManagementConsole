@@ -46,24 +46,12 @@ public class Main {
                     }
                     break;
                 case 2:
-                    System.out.print("Entrez le nom du client pour modifier la réservation : ");
-                    client = scanner.nextLine();
-                    System.out.print("Entrez le nouveau numéro de la chambre : ");
-                    int nouveauNumeroChambre = scanner.nextInt();
-                    scanner.nextLine(); // Consommer la nouvelle ligne
-                    System.out.print("Entrez la nouvelle date de check-in (yyyy-MM-dd) : ");
-                    checkInStr = scanner.nextLine();
-                    checkIn = LocalDate.parse(checkInStr, formatter);
-                    System.out.print("Entrez la nouvelle date de check-out (yyyy-MM-dd) : ");
-                    checkOutStr = scanner.nextLine();
-                    checkOut = LocalDate.parse(checkOutStr, formatter);
 
-//                    hotel.modifierReservation(nomClient, nouveauNumeroChambre, checkIn, checkOut);
+                    hotel.modifierReservation(scanner);
                     break;
                 case 3:
-                    System.out.print("Entrez le nom du client pour annuler la réservation : ");
-                    client = scanner.nextLine();
-//                    hotel.annulerReservation(client);
+
+                    hotel.annulerReservation(scanner);
                     break;
                 case 4:
                      hotel.getReservations();

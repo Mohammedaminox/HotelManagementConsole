@@ -63,4 +63,15 @@ public class Reservation {
     public void annuler(){
         this.chambre.setDisponible(true);
     }
+
+    // Override the toString() method
+    @Override
+    public String toString() {
+        return "Réservation :" +
+                "client='" + client + '\'' +
+                ", chambre=" + chambre.getChambreID() +
+                ", checkIn=" + checkIn +
+                ", checkOut=" + checkOut +
+                '.';
+    }
 }
