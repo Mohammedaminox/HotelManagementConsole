@@ -4,7 +4,7 @@ public class Chambre {
     private int chambreID;
     private boolean disponible;
 
-    public Chambre() {}
+
     public Chambre(int chambreID) {
         this.chambreID = chambreID;
         this.disponible = true;

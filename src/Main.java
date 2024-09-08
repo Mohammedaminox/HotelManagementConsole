@@ -1,12 +1,11 @@
 import hotelmanagementsystem.Hotel;
-import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Hotel hotel = new Hotel(5);
         Scanner scanner = new Scanner(System.in);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         int choix;
 
         do {

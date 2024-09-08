@@ -75,7 +75,11 @@ public class Reservation {
     }
 
         public boolean overlaps(LocalDate newCheckIn, LocalDate newCheckOut) {
-            return !(newCheckOut.isBefore(this.checkIn) || newCheckIn.isAfter(this.checkOut));
+            if (newCheckOut.isBefore(this.checkIn) || newCheckIn.isAfter(this.checkOut)){
+                return false;
+            } else {
+                return true;
+            }
         }
 
 }

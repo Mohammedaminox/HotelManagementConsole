@@ -2,6 +2,7 @@ package hotelmanagementsystem;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.time.format.DateTimeFormatter;
@@ -22,9 +23,10 @@ public class Hotel {
 
 
 
+
     //Afficher les reservations
     public void afficherReservations() {
-        if (reservations.size() > 0) {
+        if (!reservations.isEmpty()) {
             for (int i = 0; i < reservations.size(); i++) {
                 System.out.println("N°: " + (i + 1) + " - " + reservations.get(i));
             }
@@ -80,7 +82,6 @@ public class Hotel {
             System.out.println("La chambre avec l'ID " + chambreID + " n'existe pas.");
         }
     }
-
 
 
     //remener chamberes par id
@@ -152,7 +153,7 @@ public class Hotel {
         LocalDate newCheckIn = newCheckInStr.isEmpty() ? reservation.getCheckIn() : LocalDate.parse(newCheckInStr);
         LocalDate newCheckOut = newCheckOutStr.isEmpty() ? reservation.getCheckOut() : LocalDate.parse(newCheckOutStr);
 
-        // Check for overlapping reservations
+        // overlapping reservations
         boolean isAvailable = true;
         for (Reservation res : reservations) {
             if (res != reservation && res.getChambre().getChambreID() == reservation.getChambre().getChambreID() && res.overlaps(newCheckIn, newCheckOut)) {
